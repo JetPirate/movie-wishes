@@ -65,3 +65,14 @@ yarn-debug.log*
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
+
+# Ignore schema
+/db/schema.rb
+
+# Ignore SSL certs
+/config/certs/*
+!/config/certs/.keep
+
+Gemfile.lock
+# Ignore master key for decrypting credentials and more.
+/config/master.key

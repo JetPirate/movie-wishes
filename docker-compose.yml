@@ -1,0 +1,17 @@
+movie-wishes:
+  build: .
+  command: rails server
+  volumes:
+    - .:/movie-wishes
+  ports:
+    - "8443:8443"
+  env_file: .env
+  links:
+    - postgres
+  tty: true
+  stdin_open: true
+postgres:
+  image: postgres:11.4
+  ports:
+    - "5432"
+  env_file: .env

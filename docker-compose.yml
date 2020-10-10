@@ -1,17 +1,48 @@
-movie-wishes:
-  build: .
-  command: rails server
-  volumes:
-    - .:/movie-wishes
-  ports:
-    - "8443:8443"
-  env_file: .env
-  links:
-    - postgres
-  tty: true
-  stdin_open: true
-postgres:
-  image: postgres:11.4
-  ports:
-    - "5432"
-  env_file: .env
+version: "3.8"
+services:
+  movie-wishes:
+    build: .
+    image: movie-wishes-image:latest
+    command: rails server
+    volumes:
+      - .:/movie-wishes
+    ports:
+      - "8443:8443"
+    env_file: .env
+    links:
+      - postgres
+    depends_on:
+      - migrations
+    tty: true
+    stdin_open: true
+  postgres:
+    image: postgres:11.4
+    ports:
+      - "5432"
+    env_file: .env
+  migrations:
+    image: movie-wishes-image:latest
+    entrypoint: ""
+    working_dir: /movie-wishes
+    command: ruby setup_db.rb
+    env_file: .env
+    depends_on:
+      - postgres
+    links:
+      - postgres
+  react-client:
+    image: movie-wishes-image:latest
+    command: yarn start
+    entrypoint: ""
+    volumes:
+      - .:/movie-wishes
+    ports:
+      - "3000:3000"
+    env_file: .env
+    links:
+      - movie-wishes
+    depends_on:
+      - movie-wishes
+    working_dir: /movie-wishes/client
+    tty: true
+    stdin_open: true

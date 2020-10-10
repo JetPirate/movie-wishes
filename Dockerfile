@@ -4,12 +4,18 @@ LABEL maintainer fpostoleh@gmail.com
 # Install apt based dependencies required to run Rails as
 # well as RubyGems. As the Ruby image itself is based on a
 # Debian image, we use apt-get to install those.
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   build-essential \
   locales \
   nodejs \
   sudo \
-  libssl-dev
+  libssl-dev \
+  npm
+
+RUN npm install npm@latest -g
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+RUN apt update && apt install yarn
 
 RUN addgroup devel --gid 1000
 RUN adduser devel --uid 1000 --gid 1000
@@ -43,6 +49,10 @@ RUN gem install bundler && bundle install --jobs 20 --retry 5
 #COPY . ./
 COPY --chown=devel:devel . ./
 
+WORKDIR /movie-wishes/client
+RUN npm install
+
+WORKDIR /movie-wishes
 # Expose port 3000 to the Docker host, so we can access it
 # from the outside.
 EXPOSE 3000
